@@ -1,7 +1,8 @@
 from django.urls import path
-from . import views
+from .views import CredentialsApiView, SingleSiteCredentials, SingleCredentials
 
 urlpatterns = [
-    path('', views.getData),
-    path('add/', views.addCredentials)
+    path("", CredentialsApiView.as_view()),
+    path("site/<str:site>/", SingleSiteCredentials.as_view()),
+    path("id/<str:id>/", SingleCredentials.as_view())
 ]
