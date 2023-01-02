@@ -12,7 +12,9 @@ class CredentialsApiView(APIView):
     def get(self, request, *args, **kwargs):
         credentials = Credentials.objects.all()
         serializer = CredentialsSerializer(credentials, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = {"data": serializer.data, "size": len(serializer.data)}
+
+        return Response(data, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
         data = request.data
@@ -32,7 +34,9 @@ class CredentialsApiView(APIView):
 class SingleSiteCredentials(APIView):
     def get(self, request, *args, **kwargs):
         website = kwargs["site"]
-        credentials = Credentials.objects.filter(website=website).order_by('-created_at')
+        credentials = Credentials.objects.filter(website=website).order_by(
+            "-created_at"
+        )
         serializer = CredentialsSerializer(credentials, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

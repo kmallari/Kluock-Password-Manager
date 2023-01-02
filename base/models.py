@@ -23,4 +23,5 @@ class Credentials(models.Model):
     password = encrypt(models.CharField(max_length=256))
     login = models.CharField(max_length=256)
     created_at = models.BigIntegerField()
+    updated_at = models.BigIntegerField(default=0)
     autofill = models.BooleanField(default=True)
