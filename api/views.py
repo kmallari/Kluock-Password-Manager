@@ -11,7 +11,6 @@ from django.shortcuts import get_object_or_404
 class CredentialsApiView(APIView):
     def get(self, request, *args, **kwargs):
         credentials = Credentials.objects.all()
-        print("credentials", credentials)
         serializer = CredentialsSerializer(credentials, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -42,7 +41,6 @@ class SingleCredentials(APIView):
     def get(self, request, *args, **kwargs):
         id = kwargs["id"]
         credentials = get_object_or_404(Credentials, id=id)
-        print(credentials.__dict__)
 
         serializer = CredentialsSerializer(credentials, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
