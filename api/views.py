@@ -10,9 +10,23 @@ from django.shortcuts import get_object_or_404
 
 class CredentialsApiView(APIView):
     def get(self, request, *args, **kwargs):
-        credentials = Credentials.objects.all()
+        order_by = request.query_params.get("order_by")
+        page = int(request.query_params.get("page"))
+        start = 10 * (page - 1)
+        end = 10 * page
+        if order_by == "last_used":
+            credentials = Credentials.objects.all().order_by("-updated_at")[start:end]
+        else:
+            credentials = Credentials.objects.all().order_by("website")[start:end]
+        size = Credentials.objects.all().count()
         serializer = CredentialsSerializer(credentials, many=True)
-        data = {"data": serializer.data, "size": len(serializer.data)}
+        data = {"data": serializer.data, "size": size}
+
+        if len(serializer.data) == 0:
+            return Response(
+                {"error": "No more credentials found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         return Response(data, status=status.HTTP_200_OK)
 
@@ -35,7 +49,7 @@ class SingleSiteCredentials(APIView):
     def get(self, request, *args, **kwargs):
         website = kwargs["site"]
         credentials = Credentials.objects.filter(website=website).order_by(
-            "-created_at"
+            "-updated_at", "-created_at"
         )
         serializer = CredentialsSerializer(credentials, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
